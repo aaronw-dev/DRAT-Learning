@@ -6,8 +6,29 @@
   <title>D.R.A.T.</title>
   <link href="static/style.css" rel="stylesheet" type="text/css" />
   <link rel="icon" type="image/png" href="/static/images/logo-circle.png">
+
+  <script>
+    function isEmpty(val){
+      return (val === undefined || val == null || val.length <= 0) ? true : false;
+    }
+    function runonload(){
+      response = {{message|tojson|safe}};
+      if(!isEmpty(response)){
+        document.getElementById("popup").innerHTML = response;
+        document.getElementById("popup").style.top = "300px";
+        setTimeout(function(){
+          document.getElementById("popup").style.top = "-350px";
+        }, 2000);
+      }
+    }
+    window.onload = runonload;
+  </script>
+  
 </head>
-<body >
+<body>
+  <div class="popup" id="popup">
+    This is a test.
+  </div>
   <h1>
     <b>Log In</b> 
   </h1>
