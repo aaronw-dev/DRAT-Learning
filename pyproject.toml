@@ -11,6 +11,7 @@ replit = "^3.2.4"
 Flask = "^2.1.2"
 requests = "^2.28.0"
 firebase-admin = "^5.2.0"
+bs4 = "^0.0.1"
 
 [tool.poetry.dev-dependencies]
 
