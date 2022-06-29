@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import Flask, render_template, request, redirect, Markup
 import firebase_admin
-from firebase_admin import credentials, auth, firestore
+from firebase_admin import credentials, auth, firestore, exceptions
 import requests
 import json
-from time import *
+from time import sleep
 import flagimportant
 import searchalgorithm
 import sendemail
@@ -86,17 +86,26 @@ def addresearch():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template("login.html")
+        return render_template("login.html", message="")
     if request.method == 'POST':
-        authem = request.form['email']
-        authpw = request.form['password']
-        if auth.get_user_by_email(authem).email_verified == False:
-            return "Email not verified!"
-        render_template("login.html",
-                        error="Incorrect password, please try again.")
-        data = {"uid": auth.get_user_by_email(authem).uid}
-        return render_template("dashboard.html", data=data)
-
+      authem = request.form['email']
+      authpw = request.form['password']
+      payload={
+        "email":authem,
+        "password" : authpw,
+      }
+      res = requests.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + firebasekey, data=payload).json()
+      if("error" in res):
+        error = res["error"]["message"]
+        if error == "INVALID_PASSWORD":
+          return render_template("login.html", message="Password not valid. Try again.")
+        if error == "EMAIL_NOT_FOUND":
+          return render_template("login.html", message="Email not valid. Try again.")
+      if auth.get_user_by_email(authem).email_verified == False:
+        return render_template("login.html", message="Email not verified; Please check your email for a verification link.")
+        #return "Email not verified!"
+      data = {"uid": auth.get_user_by_email(authem).uid}
+      return render_template("dashboard.html", data=data)
 
 @app.route("/getdashboard", methods=['GET', 'POST'])
 def getdash():
@@ -161,18 +170,18 @@ def verify(uid):
 
 @app.errorhandler(500)
 def fivehundrederror(error):
-  return "Server Error: " + str(error)
-  return render_template("error.html", errorcode = error)
+  #return "Server Error: " + str(error)
+  return render_template("errorpage.html", errorcode = error)
 
 
 @app.errorhandler(404)
 def invalid_route(error):
-    return "404 Error: Resource not found."
-    #return render_template("error.html")
+    #return "404 Error: Resource not found."
+    return render_template("errorpage.html", errorcode=Markup("404 Error: <br> Resource not found."))
 
 @app.errorhandler(403)
 def forbidden(error):
     return redirect("https://drat-learning.aw-dev.repl.co/")
-    #return render_template("error.html")
+    #return render_template("errorpage.html")
   
 app.run(host='0.0.0.0', port=5000, debug=False)
