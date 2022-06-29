@@ -177,3 +177,16 @@ input, button {
 #notes{
   font-size: 18px;
 }
+
+.popup{
+  position: absolute;
+  left: 35%;
+  right: 35%;
+  top: -350px;
+  transition: 0.5s;
+  height: 300px;
+  text-align: center;
+  border: solid #66d1ff;
+  border-radius: 17px;
+  background-color: #81bdfe7a;
+}
