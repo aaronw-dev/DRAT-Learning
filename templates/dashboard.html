@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>D.R.A.T.</title>
+  <link href="static/style.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/png" href="/static/images/logo-circle.png">
+</head>
+<body class="dashboard">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    sessionStorage.setItem("uid", {{data|tojson}}.uid)
+    myuid = sessionStorage.getItem("uid")
+    $(document).ready(function(){
+      $.post("https://drat-learning.aw-dev.repl.co/getdashboard",
+      {
+        uid: sessionStorage.getItem("uid")
+      }, 
+      function(data, status){
+        data = data.replace("[", "")
+        data = data.replace("]", "")
+        data = data.replaceAll('"', "")
+        data = data.replaceAll("'", "")
+        data = data.split(", ")
+        //if we do not get any response from the server regarding our dashboard items
+        if(data[0] === ""){
+          //tell the user that they do not have any research pods currently.
+          noresults = document.createElement("center")
+          noresults.innerHTML = "You do not have any research... Yet!"
+          createbutton = document.createElement("button")
+          newline = document.createElement('br')
+          createbutton.innerHTML = "Create a research pod"
+          createbutton.setAttribute('onclick','showQuery()')
+          noresults.appendChild(newline)
+          noresults.appendChild(createbutton)
+          document.getElementsByTagName("body")[0].appendChild(noresults)
+          document.getElementById("loadingball").style.display = "none"
+          return
+        }
+        document.getElementById("hiddenuid").value = myuid
+        document.getElementById("loadingball").style.display = "none"
+        const body = document.getElementsByTagName("body")[0]
+        for (item of data){
+          bytenode = document.createElement('div')
+          bytenode.classList.add('bytecard')
+          bytenode.innerHTML = item
+          newline = document.createElement('br')
+          
+          interactbutton = document.createElement('button')
+          interactbutton.innerHTML = "Study this topic"
+          interactbutton.setAttribute('onclick','requestByteCard("' + item + '")')
+          bytenode.appendChild(newline)
+          bytenode.appendChild(interactbutton)
+          body.appendChild(bytenode)
+        }
+      });
+    });
+    function requestByteCard(name){
+      $.post("https://drat-learning.aw-dev.repl.co/getbyte",
+        {
+          uid: sessionStorage.getItem("uid"),
+          name: name,
+        }, 
+        function(data, status){
+          data = data.replace("...", "")
+          newline = document.createElement('br')
+          var notesoutput = ""
+          notes = document.getElementById("notes")
+          for (item of data.split(",")){
+            notesoutput += "-" + item + "<br>"
+          }
+          notes.innerHTML = notesoutput
+          var querybox = document.getElementsByClassName("notesblock")[0]
+          querybox.style.visibility = "visible"
+        }
+      )
+    }
+    function closeSidebar(){
+      var sidebar = document.getElementsByClassName("sidebar")[0]
+      document.getElementsByTagName('body')[0].style.marginLeft="0px"
+      sidebar.style.transform = "translateX(-230px)"
+      var button = document.getElementById("sidebutton")
+      button.setAttribute('onclick','openSidebar()')
+    }
+    function openSidebar(){
+      var sidebar = document.getElementsByClassName("sidebar")[0]
+document.getElementsByTagName('body')[0].style.marginLeft="230px"
+      sidebar.style.transform = "translateX(0px)"
+      var button = document.getElementById("sidebutton")
+      button.setAttribute('onclick','closeSidebar()')
+    }
+
+    function showQuery(){
+      var querybox = document.getElementsByClassName("newquery")[0]
+      querybox.style.visibility = "visible"
+    }
+    function hideQuery(){
+      var querybox = document.getElementsByClassName("newquery")[0]
+      querybox.style.visibility = "hidden"
+    }
+    function hideNotes(){
+      var querybox = document.getElementsByClassName("notesblock")[0]
+      querybox.style.visibility = "hidden"
+    }
+  </script>
+  <h1>
+    <b>D.R.A.T. Dashboard</b>
+  </h1>
+  <div class=newquery>
+    <center>
+      New Query <button onclick="javascript:hideQuery()" style="font-size: 30px; background-color: transparent; border: 12px solid white;"><b>X</b></button>
+      <form action="https://drat-learning.aw-dev.repl.co/addresearch" method="post">
+        Topic
+        <input type="text" name=query class="queryinput" autocomplete="off">
+        Name
+        <input type="text" name=name class="queryinput" autocomplete="off">
+        <input type="text" name=uid hidden id="hiddenuid">
+        <br>
+        <input type="submit">
+      </form>
+    </center>
+  </div>
+
+  <div class=notesblock>
+    <center>
+      My Notes<button onclick="javascript:hideNotes()" style="font-size: 30px; background-color: transparent; border: 12px solid white;"><b>X</b></button>
+      <div id=notes>
+      </div>
+    </center>
+  </div>
+  <center>
+    <button onclick="javascript:showQuery()" class="newquerybutton">Make a new <b>Research Pod</b></button>
+    <img src="/static/images/loading.jpg" height=50px id=loadingball>
+  </center>
+  <!--
+  <button onclick="javascript:closeSidebar()" class='sidebutton' id='sidebutton'><img src='/static/images/menuicon.png' height="24px"></button> <br>
+  -->
+  <center><h2>My Research</h2></center>
+  <!--
+  
+  <div class="sidebar">
+    this <br> tag is for spacing the links from the top button
+    <br>
+    <br>
+    
+    <a href="https://youtube.com">Youtube</a>
+    <a href="https://youtube.com">Definitely not Youtube</a>
+    <a href="https://youtube.com">Totally not Youtube</a>
+    <a href="https://youtube.com">Why would this be youtube???</a>
+  </div>
+  -->
+</center>
+</body>
+</html>

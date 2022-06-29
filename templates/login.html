@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>D.R.A.T.</title>
+  <link href="static/style.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/png" href="/static/images/logo-circle.png">
+</head>
+<body >
+  <h1>
+    <b>Log In</b> 
+  </h1>
+  <button onclick="window.location.href='https://drat-learning.aw-dev.repl.co/';" class="backbutton">
+      <b>Back</b>
+  </button> 
+  <div class="signupform">
+    <form action="https://drat-learning.aw-dev.repl.co/login" method="post" class="signupcontent" id="signin">
+      <center>
+        <br>
+        Email Address: <input type="email" required name=email id=em autocomplete="off">
+        <br>
+        <br>
+        Password: <input type="password" required name=password id=pw autocomplete="off">
+        <br>
+        <br>
+        <div style="color:red; font-size = 12px;">
+          {{error}}
+        </div>
+        <input type="submit" value="Log In">
+        <br>
+      </center>
+    </form>
+    <center>
+    <button onclick="window.location.href='https://drat-learning.aw-dev.repl.co/resetpassword';" style="font-size: 15px;">Reset your password</button>
+    </center>
+  </div>
+</body>
+</html>
